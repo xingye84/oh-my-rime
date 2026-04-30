@@ -11,6 +11,8 @@ config_version: "24.03.24"
 # 以下内容，实际会由default.custom.yaml和方案配置所覆写
 ## 九宫格依赖于 rime_mint ，如果需要使用其他方案（比如: 小鹤双拼的 九宫格），可以使用 custom 文件覆写
 schema_list:
+  - schema: wubi86_jidian_mixed  # 五笔86-拼音混输（实验）
+  # - schema: wubi98_mint_mixed    # 五笔98-拼音混输（实验）
   - schema: rime_mint            # 薄荷拼音
   - schema: double_pinyin_flypy  # 小鹤双拼
   - schema: rime_mint_flypy      # 薄荷拼音-小鹤混输方案

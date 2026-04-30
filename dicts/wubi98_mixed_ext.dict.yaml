@@ -1,0 +1,10 @@
+# Rime dictionary
+# encoding: utf-8
+#
+# 五笔98-拼音混输扩展词典
+# 用于补充精简 98 词库里缺失、但混输场景常用的词条。
+---
+name: wubi98_mixed_ext
+version: "2026.04.29"
+sort: by_weight
+...

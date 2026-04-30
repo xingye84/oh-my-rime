@@ -1,0 +1,207 @@
+schema:
+  schema_id: wubi98_mint_mixed
+  name: "五笔98-拼音混输"
+  version: "26.04.29"
+  author:
+    - 發明人 王永民
+    - 修改者 yanhuacuo <https://github.com/yanhuacuo/98wubi>
+    - 修改者 Mintimate
+    - 修改者 OpenAI Codex
+  description: |
+    - 实验性方案：以五笔98为主输入，叠加拼音混打候选
+    - 保持五笔98原有 speller，不复用拼音方案的 algebra
+    - 拼音候选通过 reverse_lookup 混入
+  dependencies:
+    - melt_eng
+    - rime_mint
+
+switches:
+  - name: ascii_mode
+    reset: 0
+    states: [ 中文, 英文 ]
+  - name: emoji_suggestion
+    states: [ "😣️","😁️" ]
+    reset: 1
+  - name: full_shape
+    states: [ 半角, 全角 ]
+    reset: 0
+  - name: transcription
+    states: [ 简体 , 繁体 ]
+    reset: 0
+  - name: ascii_punct
+    states: [ 。，, ．， ]
+    reset: 0
+
+engine:
+  processors:
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - punct_translator
+    - table_translator
+    - lua_translator@*shijian
+    - lua_translator@*number_translator
+    - lua_translator@*chineseLunarCalendar_translator
+    - lua_translator@*mint_calculator_translator
+    - table_translator@melt_eng
+    - reverse_lookup_translator
+    - lua_translator@*force_gc
+  filters:
+    - lua_filter@*wubi_mixed_filter
+    - lua_filter@*autocap_filter
+    - simplifier@emoji_suggestion
+    - lua_filter@*autocap_filter
+    - simplifier@transcription_cc
+    - lua_filter@*reduce_english_filter
+    - uniquifier
+
+date_formats:
+  - "Y年m月d日"
+  - "Y-m-d"
+  - "Y/m/d"
+  - "Y.m.d"
+  - "Ymd"
+  - "Y年n月j日"
+  - "y年n月j日"
+  - "n月j日"
+time_formats:
+  - "H:M"
+  - "H点M分"
+  - "H:M:S"
+  - "H时M分S秒"
+  - "AI:M"
+  - "I:M P"
+datetime_formats:
+  - "Y-m-d H:M:S"
+  - "Y-m-dTH:M:S O"
+  - "YmdHMS"
+  - "Y年m月d日 H点M分"
+  - "y/m/d I:M p"
+
+transcription_cc:
+  option_name: transcription
+  opencc_config: s2t.json
+  tips: none
+  excluded_types: [ reverse_lookup ]
+
+emoji_suggestion:
+  opencc_config: emoji.json
+  option_name: emoji_suggestion
+  tips: all
+  inherit_comment: false
+
+reduce_english_filter:
+  mode: all
+  idx: 2
+  words: [aid, ann,
+  bail, bait, bam, band, bans, bat, bay, bend, bent, benz, bib, bid, bien, biz, boc, bop, bos, bud, buf,
+  cab, cad, cain, cam, cans, cap, cas, cef, chad, chan, chap, chef, cher, chew, chic, chin, chip, chit, coup, cum, cunt, cur,
+  dab, dag, dal, dam, dent, dew, dial, diet, dim, din, dip, dis, dit, doug, dub, dug, dunn,
+  fab, fax, fob, fog, foul, fur,
+  gag, gail, gain, gal, gam, gaol, ged, gel, ger, guam, gus, gut,
+  hail, ham, hank, hans, hat, hay, heil, heir, hem, hep, hud, hum, hung, hunk, hut,
+  jim, jug,
+  kat,
+  lab, lad, lag, laid, lam, laos, lap, lat, lax, lay, led, leg, lex, liam, lib, lid, lied, lien, lies, linn, lip, lit, liz, lob, lug, lund, lung, lux,
+  mag, maid, mann, mar, mat, med, mel, mend, mens, ment, mil, mins, mint, mob, moc, mop, mos, mot, mud, mug, mum, nail,
+  nap, nat, nay, neil, nib, nip, noun, nous, nun, nut,
+  pac, paid, pail, pain, pair, pak, pal, pam, pans, pant, pap, par, pat, paw, pax, pens, pic, pier, pies, pins, pint, pit, pix, pod, pop, pos, pot, pour, pow, pub,
+  rand, rant, rent, rep, res, ret, rex, rib, rid, rig, rim, rub, rug, rum, runc, runs,
+  sac, sail, sal, sam, sans, sap, saw, sax, sew, sham, shaw, shin, sig, sin, sip, sis, suit, sung, suns, sup, sur, sus,
+  tad, tail, taj, tar, tax, tec, ted, tel, ter, tex, tic, tied, tier, ties, tim, tin, tit, tour, tout, tum,
+  wag, wand, womens, wap, wax, weir, won,
+  yan, yen]
+
+chineseLunarCalendar_translator: lunar
+
+translator:
+  dictionary: wubi98_mint_mixed
+  db_class: tabledb
+  initial_quality: 1.2
+  enable_charset_filter: false
+  enable_sentence: false
+  enable_encoder: true
+  encode_commit_history: true
+  enable_completion: false
+  disable_user_dict_for_patterns:
+    - "^z.*$"
+  enable_user_dict: true
+
+melt_eng:
+  dictionary: melt_eng
+  enable_sentence: false
+  enable_completion: false
+  initial_quality: 0.8
+
+speller:
+  alphabet: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA
+  delimiter: " `"
+
+abc_segmentor:
+  extra_tags:
+    - reverse_lookup
+
+reverse_lookup:
+  dictionary: rime_mint
+  prism: rime_mint
+  overwrite_comment: true
+  tips: 〔拼音〕
+  preedit_format:
+    - xform/([nl])v/$1ü/
+    - xform/([nl])ue/$1üe/
+    - xform/([jqxy])v/$1u/
+
+punctuator:
+  import_preset: default
+  half_shape:
+      "#": "#"
+      "*": "*"
+      '.': { commit: 。 }
+      "`": "`"
+      "~": "~"
+      "@": "@"
+      "=": "="
+      "/": ["/", "÷"]
+      '\': "、"
+      "_": "──"
+      "'": { pair: ["「", "」"] }
+      "[": ["【", "["]
+      "]": ["】", "]"]
+      "$": ["¥", "$", "€", "£", "¢", "¤"]
+      "<": ["《", "〈", "«", "<"]
+      ">": ["》", "〉", "»", ">"]
+
+recognizer:
+  import_preset: default
+  patterns:
+    url: "^[a-z]+[.].+$"
+    punct: "^/([0-9]0?|[a-zA-Z]+)$"
+    email: "^[A-Za-z][-_.0-9A-Za-z]*@.*$"
+    reverse_lookup: "`[a-z]*'?$"
+    rmb: "^R[0-9]+[.]?[0-9]*"
+    expression: "^=.*$"
+    gregorian_to_lunar: "^N[0-9]{1,8}"
+    uppercase: ""
+
+key_binder:
+  import_preset: default
+  shijian_keys: ["o"]
+  bindings:
+    - { accept: "Control+Shift+E", toggle: emoji_suggestion, when: always }
+    - { accept: "Control+Shift+1", toggle: transcription, when: has_menu }
+    - { accept: "Control+Shift+exclam", toggle: transcription, when: has_menu }
+
+menu:
+  page_size: 6

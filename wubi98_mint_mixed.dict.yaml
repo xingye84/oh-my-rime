@@ -1,0 +1,12 @@
+# Rime dictionary
+# encoding: utf-8
+#
+# 五笔98-拼音混输专用词典
+---
+name: wubi98_mint_mixed
+version: "2026.04.29"
+sort: by_weight
+import_tables:
+  - dicts/wubi98_base
+  - dicts/wubi98_mixed_ext
+...

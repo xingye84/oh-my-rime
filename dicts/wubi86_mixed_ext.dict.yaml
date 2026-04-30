@@ -1,0 +1,9 @@
+# Rime dictionary
+# encoding: utf-8
+#
+# 五笔86-拼音混输扩展词典
+---
+name: wubi86_mixed_ext
+version: "2026.04.29"
+sort: by_weight
+...

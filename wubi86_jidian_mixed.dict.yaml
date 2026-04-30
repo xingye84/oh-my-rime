@@ -1,0 +1,12 @@
+# Rime dictionary
+# encoding: utf-8
+#
+# 五笔86-拼音混输专用词典
+---
+name: wubi86_jidian_mixed
+version: "2026.04.29"
+sort: by_weight
+import_tables:
+  - dicts/wubi86_core
+  - dicts/wubi86_mixed_ext
+...
