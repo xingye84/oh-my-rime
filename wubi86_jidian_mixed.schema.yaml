@@ -36,6 +36,7 @@ engine:
   processors:
     - ascii_composer
     - recognizer
+    - lua_processor@*wubi_mixed_learn_processor
     - key_binder
     - speller
     - punctuator

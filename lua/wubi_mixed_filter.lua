@@ -3,6 +3,7 @@
 -- 2. 给中文候选追加五笔编码提示，便于观察混输结果
 
 local M = {}
+local shared = require("wubi_mixed_shared")
 
 local function is_chinese(text)
     return text and utf8.len(text) and utf8.len(text) >= 1
@@ -26,6 +27,20 @@ end
 local function is_pinyin_comment(comment)
     local normalized = normalize_comment(comment)
     return normalized ~= "" and normalized:match("^[%a%s']+$") and not normalized:match("%d")
+end
+
+local function extract_pinyin_code(cand, input_code)
+    local comment_code = normalize_comment(cand.comment)
+    if is_pinyin_comment(comment_code) then
+        return comment_code .. " "
+    end
+
+    local normalized_input = normalize_code(input_code)
+    if normalized_input and normalized_input ~= "" then
+        return normalized_input .. " "
+    end
+
+    return nil
 end
 
 local function is_pinyin_candidate(cand)
@@ -141,11 +156,14 @@ function M.func(input, env)
     local code = context.input or ""
 
     if code == "" or not code:match("^[A-Za-z'`]+$") then
+        shared.candidates = nil
         for cand in input:iter() do
             yield(cand)
         end
         return
     end
+
+    shared.candidates = {}
 
     if not env.reverse_db and env.dictionary ~= "" then
         local ok, db = pcall(ReverseDb, "build/" .. env.dictionary .. ".reverse.bin")
@@ -154,6 +172,12 @@ function M.func(input, env)
 
     local buckets = {{}, {}, {}, {}, {}}
     for cand in input:iter() do
+        if is_chinese(cand.text or "") and is_pinyin_candidate(cand) then
+            local pinyin_code = extract_pinyin_code(cand, code)
+            if pinyin_code then
+                shared.candidates[cand.text] = pinyin_code
+            end
+        end
         local bucket = classify_candidate(cand, #code)
         table.insert(buckets[bucket], cand)
     end
