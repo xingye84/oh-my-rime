@@ -1,0 +1,51 @@
+name: Sync Upstream
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Every Sunday 20:00 Asia/Shanghai = Sunday 12:00 UTC
+    - cron: "0 12 * * 0"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+env:
+  UPSTREAM_REPO: Mintimate/oh-my-rime
+  UPSTREAM_BRANCH: main
+  TARGET_BRANCH: main
+
+jobs:
+  sync-upstream:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出目标分支
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+
+      - name: 配置 Git 提交身份
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: 添加并拉取上游仓库
+        run: |
+          # 有就删，没有就跳过，保证 upstream 指向我们期望的仓库
+          git remote remove upstream 2>/dev/null || true
+          git remote add upstream "https://github.com/${UPSTREAM_REPO}.git"
+          git fetch upstream "${UPSTREAM_BRANCH}"
+
+      - name: 合并上游更新
+        run: |
+          git checkout "${TARGET_BRANCH}"
+          git merge "upstream/${UPSTREAM_BRANCH}" --no-edit
+
+      - name: 推送同步结果
+        run: |
+          git push origin "HEAD:${TARGET_BRANCH}"
