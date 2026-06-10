@@ -163,7 +163,7 @@ key_binder:
     - { when: always, accept: Control+Shift+3, toggle: full_shape } # 切换全角/半角
     - { when: always, accept: Control+Shift+4, toggle: transcription } # 切换简体/繁体
     - { when: always, accept: Control+Shift+5, toggle: extended_charset } # 切换扩展字符
-    - { when: always, accept: Shift+space, toggle: full_shape } # 另一种切换全角/半角的方式
+    # - { when: always, accept: Shift+space, toggle: full_shape } # 另一种切换全角/半角的方式
     - { when: always, accept: Control+period, toggle: ascii_punct } # 切换中/西文标点
     # 将小键盘 0~9 . 映射到主键盘，数字金额大写的 Lua 如 R1234.5678 可使用小键盘输入
     - {accept: KP_0, send: 0, when: composing}
