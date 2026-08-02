@@ -4,7 +4,7 @@
 #兼容词库，对于多字词汇两种读音的场景，手动维护到本表以及一些其他的杂项
 ---
 name: rime_mint.compatible
-version: "2026-07-20"
+version: "2026-07-29"
 sort: by_weight
 
 ...
@@ -343,7 +343,7 @@ sort: by_weight
 调回来	tiáo huí lái	284
 调回了	tiáo huí le	385
 调回去	tiáo huí qù	120
-长了	cháng le	855
+长了	cháng le	5826
 哀乐	āi lè	1445
 炸锅	zhá guō	662
 调回	tiáo huí	381
